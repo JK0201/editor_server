@@ -10,17 +10,31 @@ router = APIRouter(
 )
 
 
+# List documents
 @router.get("")
 async def list_documents(
     category_id: int,
     session: AsyncSession = Depends(get_session),
+    sort_by: str = "id",
+    order: str = "asc",
+    page: int = 1,
+    size: int = 20,
+    q: str | None = None,
+    status: str | None = None,
 ):
     return await get_documents(
         category_id,
         session,
+        q,
+        status,
+        sort_by,
+        order,
+        page,
+        size,
     )
 
 
+# Get document by ID
 @router.get("/{document_id}")
 async def get_document_by_id(
     document_id: int,
