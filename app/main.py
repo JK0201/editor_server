@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from app.core.config import settings
 from app.core.database import engine, init_db
-from app.routes.editor import router as editor_router
+from app.routes import categories_router, documents_router
 
 
 @asynccontextmanager
@@ -35,4 +35,5 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-app.include_router(editor_router)
+app.include_router(categories_router)
+app.include_router(documents_router)

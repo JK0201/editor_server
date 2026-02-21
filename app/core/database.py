@@ -25,6 +25,8 @@ async def get_session() -> AsyncSession:
 
 # Connect to DB and create tables (ddl-auto: update)
 async def init_db():
+    import app.models  # noqa: F401
+
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
     return "Connected to DB successfully"
