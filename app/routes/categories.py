@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
@@ -13,4 +13,8 @@ router = APIRouter(
 # List categories
 @router.get("")
 async def get_categories_list(session: AsyncSession = Depends(get_session)):
-    return await get_categories(session)
+    result = await get_categories(session)
+    return {
+        "status": status.HTTP_200_OK,
+        "data": result,
+    }

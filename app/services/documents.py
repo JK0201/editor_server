@@ -16,7 +16,7 @@ async def get_documents(
     category_id: int,
     session: AsyncSession,
     q: str | None = None,
-    status: str | None = None,
+    progress: str | None = None,
     sort_by: str = "id",
     order: str = "asc",
     page: int = 1,
@@ -28,9 +28,9 @@ async def get_documents(
     if q:
         query = query.where(Document.title.ilike(f"%{q}%"))
 
-    # filter by status
-    if status:
-        query = query.where(Document.status == status)
+    # filter by progress
+    if progress:
+        query = query.where(Document.status == progress)
 
     # sort by
     sort_column = {

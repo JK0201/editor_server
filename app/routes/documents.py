@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
@@ -22,18 +22,22 @@ async def get_documents_list(
     page: Annotated[int, Query()] = 1,
     size: Annotated[int, Query()] = 20,
     q: Annotated[str | None, Query()] = None,
-    status: Annotated[str | None, Query()] = None,
+    progress: Annotated[str | None, Query()] = None,
 ):
-    return await get_documents(
+    result = await get_documents(
         category_id,
         session,
         q,
-        status,
+        progress,
         sort_by,
         order,
         page,
         size,
     )
+    return {
+        "status": status.HTTP_200_OK,
+        "data": result,
+    }
 
 
 # Get document by ID
@@ -42,10 +46,11 @@ async def get_document_by_id(
     document_id: Annotated[int, Path()],
     session: AsyncSession = Depends(get_session),
 ):
-    return await get_document(
-        document_id,
-        session,
-    )
+    result = await get_document(document_id, session)
+    return {
+        "status": status.HTTP_200_OK,
+        "data": result,
+    }
 
 
 # Download single docx document by ID
