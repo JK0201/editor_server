@@ -4,7 +4,13 @@ from fastapi import APIRouter, Body, Depends, Path, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import get_session
-from app.services import download_documents, get_document, get_documents
+from app.schemas import ScriptLineDiff
+from app.services import (
+    download_documents,
+    get_document,
+    get_documents,
+    sync_script_lines,
+)
 
 router = APIRouter(
     prefix="/api/v1/documents",
@@ -60,3 +66,16 @@ async def download_document_by_ids(
     session: AsyncSession = Depends(get_session),
 ):
     return await download_documents(document_ids, session)
+
+
+@router.patch("/{document_id}/script_lines")
+async def patch_script_lines(
+    document_id: Annotated[int, Path()],
+    data: ScriptLineDiff,
+    session: AsyncSession = Depends(get_session),
+):
+    result = await sync_script_lines(document_id, data, session)
+    return {
+        "status": status.HTTP_200_OK,
+        "data": result,
+    }

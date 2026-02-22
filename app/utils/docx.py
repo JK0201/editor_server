@@ -1,4 +1,5 @@
 import io
+from datetime import datetime
 
 from docx import Document as DocxDocument
 from fastapi import HTTPException, status
@@ -15,8 +16,15 @@ def format_docx(
     speakers: dict,
     lines: list[ScriptLine],
 ) -> io.BytesIO:
+    split_doc_title = document.title.split("_")
+    recorded_date = split_doc_title[-2]
+    recorded_time = split_doc_title[-1].split(".")[0]
+
+    dt = datetime.strptime(f"{recorded_date}{recorded_time}", "%y%m%d%H%M%S")
+    formatted_datetime = dt.strftime("%y.%m.%d - %H:%M:%S")
+
     doc = DocxDocument()
-    doc.add_paragraph(document.updated_at.strftime("%y.%m.%d"))
+    doc.add_paragraph(formatted_datetime)
     doc.add_paragraph("")
 
     for line in lines:
