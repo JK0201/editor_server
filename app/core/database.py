@@ -4,7 +4,7 @@ from sqlalchemy import DateTime
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-from app.core.config import settings
+from app.core import settings
 
 DATABASE_URL = (
     f"mysql+aiomysql://{settings.db_user}:{settings.db_password}"

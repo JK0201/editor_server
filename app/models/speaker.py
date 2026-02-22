@@ -1,7 +1,7 @@
 from sqlalchemy import BigInteger, ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.core.database import Base
+from app.core import Base
 
 
 class Speaker(Base):

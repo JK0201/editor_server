@@ -2,8 +2,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from app.core.config import settings
-from app.core.database import engine, init_db
+from app.core import engine, init_db, settings
 from app.routes import categories_router, documents_router
 
 

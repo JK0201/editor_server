@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.document import Document
 from app.models.script_line import ScriptLine
 from app.models.speaker import Speaker
-from app.utils import make_docx, make_zip
+from app.utils import generate_presigned_url, make_docx, make_zip
 
 
 async def get_documents(
@@ -75,6 +75,7 @@ async def get_document(document_id: int, session: AsyncSession):
 
     return {
         "document": document,
+        "audio_presigned_url": generate_presigned_url(document.audio_url),
         "speakers": speakers.scalars().all(),
         "script_lines": script_lines.scalars().all(),
     }

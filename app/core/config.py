@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     reload: bool = Field(False)
 
     # DB connection settings
-    db_host: str = Field("192.168.0.200")
+    db_host: str
     db_port: int = Field(3306)
     db_user: str = Field("user")
     db_password: str = Field("password")
@@ -23,6 +23,13 @@ class Settings(BaseSettings):
 
     # SQL Alchemy settings
     echo: bool = Field(False)
+
+    # S3 Bucket settings
+    s3_endpoint: str | None = Field(None)
+    s3_access_key: str
+    s3_secret_key: str
+    s3_bucket: str = Field("editor")
+    s3_region: str = Field("ap-northeast-2")
 
     class Config:
         env_file = BASE_DIR / ".env"  # fallback to .env file
