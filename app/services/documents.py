@@ -124,13 +124,7 @@ async def sync_script_lines(
     speaker_temp_map: dict[str, int] = {}
     line_temp_map: dict[str, int] = {}
 
-    # 2. delete speakers first, if diff.speakers.deleted != []
-    if diff.speakers.deleted:
-        await session.execute(
-            delete(Speaker).where(Speaker.id.in_(diff.speakers.deleted))  # bulk delete
-        )
-
-    # 3. create speakers, if diff.speakers.created != [] by loop
+    # 2. create speakers, if diff.speakers.created != [] by loop
     # 해당 Speaker 객체를 트랜젝션 메니저에 올린 후 -> flush() -> 반환 받은 id를 temp에 저장 (커밋은 안함)
     for spk in diff.speakers.created:
         new_speaker = Speaker(document_id=document_id, name=spk.name)
@@ -138,19 +132,19 @@ async def sync_script_lines(
         await session.flush()  # flush to get the new speaker id
         speaker_temp_map[spk.temp_id] = new_speaker.id
 
-    # 4. update speaker's name, if diff.speakers.updated != [] by loop
+    # 3. update speaker's name, if diff.speakers.updated != [] by loop
     for spk in diff.speakers.updated:
         await session.execute(
             update(Speaker).where(Speaker.id == spk.id).values(name=spk.name)
         )
 
-    # 5. delete script lines first, if diff.deleted != []
+    # 4. delete script lines first, if diff.deleted != []
     if diff.deleted:
         await session.execute(
             delete(ScriptLine).where(ScriptLine.id.in_(diff.deleted))  # bulk delete
         )
 
-    # 6. create script lines, if diff.created != [] by loop
+    # 5. create script lines, if diff.created != [] by loop
     for line in diff.created:
         # temp_id (새로 추가된 화자의 id)면, speaker_temp_map에서 flush후 받은 실제 id 사용
         # 기존 화자 id면, 그대로 사용
@@ -166,7 +160,7 @@ async def sync_script_lines(
         await session.flush()
         line_temp_map[line.temp_id] = new_line.id
 
-    # 7. update script lines, if diff.updated != [] by loop
+    # 6. update script lines, if diff.updated != [] by loop
     for line in diff.updated:
         values = line.model_dump(exclude_unset=True)  # 요청으로 들어온 필드값만 추출
         values.pop("id")  # exclude id from values (id is primary key)
@@ -176,6 +170,12 @@ async def sync_script_lines(
                 .where(ScriptLine.id == line.id)
                 .values(**values)  # **unpaking
             )
+
+    # 7. delete speakers first, if diff.speakers.deleted != []
+    if diff.speakers.deleted:
+        await session.execute(
+            delete(Speaker).where(Speaker.id.in_(diff.speakers.deleted))  # bulk delete
+        )
 
     # 8. re-order script lines, if diff.orders != [] by loop
     for item in diff.orders:

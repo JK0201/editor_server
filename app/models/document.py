@@ -49,3 +49,13 @@ class Document(Base):
         default=DocumentStatus.PENDING,
         comment="Document processing status",
     )
+
+    recorded_date: Mapped[str] = mapped_column(
+        String(6),
+        comment="Recording date (YYMMDD)",
+    )
+
+    recorded_time: Mapped[str] = mapped_column(
+        String(6),
+        comment="Recording time (HHMMSS)",
+    )

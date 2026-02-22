@@ -19,7 +19,7 @@ class ScriptLine(Base):
         comment="Document ID(FK)",
     )
 
-    speaker_id: Mapped[int] = mapped_column(
+    speaker_id: Mapped[int | None] = mapped_column(
         BigInteger,
         ForeignKey("speakers.id"),
         comment="Speaker ID(FK)",

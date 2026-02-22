@@ -1,4 +1,4 @@
-from .categories import get_categories
+from .categories import download_merged_documents, get_categories
 from .documents import (
     download_documents,
     get_document,
