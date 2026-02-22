@@ -1,10 +1,15 @@
+import asyncio
+from urllib.parse import quote
+
 from fastapi import HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.document import Document
 from app.models.script_line import ScriptLine
 from app.models.speaker import Speaker
+from app.utils import make_docx, make_zip
 
 
 async def get_documents(
@@ -76,3 +81,24 @@ async def get_document(document_id: int, session: AsyncSession):
 
 
 # Download docx document by ID
+async def download_documents(document_ids: list[int], session: AsyncSession):
+    if len(document_ids) == 1:
+        title, buffer = await make_docx(document_ids[0], session)
+        return StreamingResponse(
+            buffer,
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",  # docx file type (HTTP protocol)
+            headers={
+                "Content-Disposition": f"attachment; filename*=UTF-8''{quote(title)}.docx"  # download immidiately without opening in browser
+            },
+        )
+
+    results = await asyncio.gather(
+        *[make_docx(doc_id, session) for doc_id in document_ids]
+    )
+    zip_buffer = make_zip([f"{title}.docx", buffer] for title, buffer in results)
+
+    return StreamingResponse(
+        zip_buffer,
+        media_type="application/zip",
+        headers={"Content-Disposition": "attachment; filename*=UTF-8''documents.zip"},
+    )

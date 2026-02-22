@@ -30,8 +30,9 @@ class ScriptLine(Base):
         comment="Script line text",
     )
 
-    start_time: Mapped[str] = mapped_column(
+    start_time: Mapped[str | None] = mapped_column(
         String(10),
+        nullable=True,
         comment="Start time (MM:SS)",
     )
 

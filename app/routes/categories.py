@@ -12,5 +12,5 @@ router = APIRouter(
 
 # List categories
 @router.get("")
-async def list_categories(session: AsyncSession = Depends(get_session)):
+async def get_categories_list(session: AsyncSession = Depends(get_session)):
     return await get_categories(session)
